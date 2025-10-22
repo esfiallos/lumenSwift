@@ -13,19 +13,33 @@ async function startServer() {
   app.use(cors());
   app.use(bodyParser.json());
 
-  // Conectar Mongo Atlas
-  await connectMongo(MONGO_URI);
+  // --- Prueba de vida para Render ---
+  app.get("/", (req, res) => res.json({ message: "Lumen backend running 🚀" }));
 
-  // Instanciar IA y servicio principal
-  const gemini = new GeminiAdapter(GEMINI_API_KEY);
-  const chatService = new ChatService(gemini);
+  try {
+    // --- Conexión a Mongo ---
+    if (!MONGO_URI) throw new Error("Falta MONGO_URI en variables de entorno");
+    await connectMongo(MONGO_URI);
+    console.log("Conectado a MongoDB");
 
-  // Registrar rutas
-  app.use("/api", createChatRoutes(chatService));
+    // --- Gemini ---
+    if (!GEMINI_API_KEY) throw new Error("Falta GEMINI_API_KEY en .env o Render");
+    const gemini = new GeminiAdapter(GEMINI_API_KEY);
+    const chatService = new ChatService(gemini);
 
-  app.listen(PORT, () => {
-    console.log(`Servidor Lumen corriendo en http://localhost:${PORT}`);
-  });
+    // --- Rutas principales ---
+    app.use("/api", createChatRoutes(chatService));
+
+    // --- Escuchar puerto ---
+    const port = PORT || process.env.PORT || 3000;
+    app.listen(port, () => {
+      console.log(`Servidor Lumen corriendo en puerto ${port}`);
+    });
+  } catch (err) {
+    console.error("Error al iniciar el servidor:", err.message);
+    process.exit(1); // termina proceso con error explícito
+  }
 }
 
+// Inicia el servidor
 startServer();
