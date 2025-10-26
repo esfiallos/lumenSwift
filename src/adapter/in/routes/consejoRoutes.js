@@ -1,9 +1,10 @@
+// src/adapter/in/routes/consejoRoutes.js
 import express from "express";
+import { registrarConsejo, obtenerConsejos } from "../../../controllers/consejoController.js";
+
 const router = express.Router();
 
-import { crearConsejo, listarConsejos } from "../../../controllers/consejoController.js";
-
-router.post("/", crearConsejo);
-router.get("/", listarConsejos);
+router.post("/", registrarConsejo);
+router.get("/", obtenerConsejos);
 
 export default router;

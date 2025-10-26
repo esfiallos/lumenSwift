@@ -1,9 +1,12 @@
+// adapter/in/routes/emocionRoutes.js
 import express from "express";
-const router = express.Router();
+import * as emocionController from "../../../controllers/emocionController.js";
 
-import { crearEmocion, listarEmociones} from "../../../controllers/emocionController.js";
+export default function createEmocionRoutes(chatService) {
+  const router = express.Router();
 
-router.post("/", crearEmocion);
-router.get("/", listarEmociones);
+  router.post("/", (req, res) => emocionController.crearEmocionConIA(req, res, chatService));
+  router.get("/", emocionController.listarEmociones);
 
-export default router;
+  return router;
+}

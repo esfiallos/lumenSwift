@@ -1,9 +1,7 @@
-// src/server.js
 import { PORT, MONGO_URI, GEMINI_API_KEY } from "./config/env.js";
-import connectMongo from "./adapter/out/mongoAdapter.js"; // usar .js
+import connectMongo from "./adapter/out/mongoAdapter.js";
 import createApp from "./app.js";
 
-// Servicios externos
 import ChatService from "./core/services/chatService.js";
 import GeminiAdapter from "./adapter/out/geminiAdapter.js";
 

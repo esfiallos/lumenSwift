@@ -1,4 +1,3 @@
-// core/services/emocionService.js
 import Emocion from "../../models/Emocion.js";
 
 export async function crearEmocion(data) {

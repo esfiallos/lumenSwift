@@ -1,10 +1,10 @@
-// src/adapter/in/routes/usuarioRoutes.js
+// usuarioRoutes.js
 import express from "express";
-import {crearUsuario, listarUsuarios} from "../../../controllers/usuarioController.js";
+import { registrarUsuario, obtenerUsuarios } from "../../../controllers/usuarioController.js";
 
 const router = express.Router();
 
-router.post("/", crearUsuario);
-router.get("/", listarUsuarios);
+router.post("/", registrarUsuario);
+router.get("/", obtenerUsuarios);
 
 export default router;

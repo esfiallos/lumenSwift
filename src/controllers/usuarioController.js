@@ -1,20 +1,17 @@
-import Usuario from "../models/usuario.js"; // apunta a src/models/usuario.js
+import { crearUsuario, listarUsuarios, buscarUsuarioPorCorreo } from "../core/services/usuarioService.js";
 
-// Crear usuario
-export async function crearUsuario(req, res) {
+export async function registrarUsuario(req, res) {
   try {
-    const usuario = new Usuario(req.body);
-    await usuario.save();
+    const usuario = await crearUsuario(req.body);
     res.status(201).json(usuario);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(400).json({ error: err.message });
   }
 }
 
-// Listar todos los usuarios
-export async function listarUsuarios(req, res) {
+export async function obtenerUsuarios(req, res) {
   try {
-    const usuarios = await Usuario.find();
+    const usuarios = await listarUsuarios();
     res.json(usuarios);
   } catch (err) {
     res.status(500).json({ error: err.message });

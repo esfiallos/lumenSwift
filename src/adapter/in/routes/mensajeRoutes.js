@@ -1,10 +1,10 @@
-// adapter/in/routes/mensajeRoutes.js
+// src/adapter/in/routes/mensajeRoutes.js
 import express from "express";
+import { registrarMensaje, obtenerMensajes } from "../../../controllers/mensajeController.js";
+
 const router = express.Router();
 
-import { crearMensaje, listarMensajes } from "../../../controllers/mensajeController.js";
-
-router.post("/", crearMensaje);
-router.get("/", listarMensajes);
+router.post("/", registrarMensaje);
+router.get("/", obtenerMensajes);
 
 export default router;

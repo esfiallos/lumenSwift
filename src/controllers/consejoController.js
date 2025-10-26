@@ -1,18 +1,18 @@
-// adapter/in/controllers/consejoController.js
-import * as consejoService from "../core/services/consejoService.js";
+// src/controllers/consejoController.js
+import { crearConsejo, listarConsejos } from "../core/services/consejoService.js";
 
-export async function crearConsejo(req, res) {
+export async function registrarConsejo(req, res) {
   try {
-    const consejo = await consejoService.crearConsejo(req.body);
+    const consejo = await crearConsejo(req.body);
     res.status(201).json(consejo);
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
 }
 
-export async function listarConsejos(req, res) {
+export async function obtenerConsejos(req, res) {
   try {
-    const consejos = await consejoService.listarConsejos();
+    const consejos = await listarConsejos();
     res.json(consejos);
   } catch (err) {
     res.status(500).json({ error: err.message });

@@ -3,30 +3,38 @@ import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
 
-// Importar rutas en ES Modules
-import createChatRoutes from "./adapter/in/routes/chatRoutes.js";
+import createEmocionRoutes from "./adapter/in/routes/emocionRoutes.js";
 import usuarioRoutes from "./adapter/in/routes/usuarioRoutes.js";
-import emocionRoutes from "./adapter/in/routes/emocionRoutes.js";
-import mensajeRoutes from "./adapter/in/routes/mensajeRoutes.js";
 import consejoRoutes from "./adapter/in/routes/consejoRoutes.js";
+import mensajeRoutes from "./adapter/in/routes/mensajeRoutes.js";
 
-function createApp(chatService) {
+export default function createApp(chatService) {
   const app = express();
 
   app.use(cors());
   app.use(bodyParser.json());
 
-  // --- Ruta de prueba ---
-  app.get("/", (req, res) => res.json({ message: "Lumen backend running" }));
+  // 🔹 Rutas
 
-  // --- Rutas modulares ---
-  app.use("/api/chat", createChatRoutes(chatService));
-  app.use("/api/usuarios", usuarioRoutes);
-  app.use("/api/emociones", emocionRoutes);
-  app.use("/api/mensajes", mensajeRoutes);
-  app.use("/api/consejos", consejoRoutes);
+  console.log("🧩 Creando rutas...");
+
+console.log("🧩 Cargando rutas...");
+app.use("/api/usuarios", usuarioRoutes);
+console.log("✅ Usuarios listo");
+
+app.use("/api/consejos", consejoRoutes);
+console.log("✅ Consejos listo");
+
+app.use("/api/mensajes", mensajeRoutes);
+console.log("✅ Mensajes listo");
+
+app.use("/api/emociones", createEmocionRoutes(chatService));
+console.log("✅ Emociones listo");
+
+  // 🔹 Default route
+  app.get("/", (req, res) => {
+    res.send("API de Bienestar Emocional Activa");
+  });
 
   return app;
 }
-
-export default createApp;

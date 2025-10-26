@@ -1,8 +1,9 @@
+// src/core/services/mensajeService.js
 import Mensaje from "../../models/Mensaje.js";
 
 export async function crearMensaje(data) {
-  const msg = new Mensaje(data);
-  return await msg.save();
+  const nuevoMensaje = new Mensaje(data);
+  return await nuevoMensaje.save();
 }
 
 export async function listarMensajes() {

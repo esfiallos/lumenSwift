@@ -1,4 +1,3 @@
-// core/services/usuarioService.js
 import Usuario from "../../models/usuario.js";
 
 export async function crearUsuario(data) {
@@ -12,6 +11,6 @@ export async function listarUsuarios() {
   return await Usuario.find();
 }
 
-export async function buscarPorCorreo(correo) {
+export async function buscarUsuarioPorCorreo(correo) {
   return await Usuario.findOne({ correo });
 }
