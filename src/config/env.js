@@ -1,7 +1,7 @@
-require("dotenv").config();
+// src/config/env.js
+import dotenv from "dotenv";
+dotenv.config(); 
 
-module.exports = {
-  PORT: process.env.PORT || 5000,
-  MONGO_URI: process.env.MONGO_URI,
-  GEMINI_API_KEY: process.env.GEMINI_API_KEY
-};
+export const PORT = process.env.PORT || 5000;
+export const MONGO_URI = process.env.MONGO_URI;
+export const GEMINI_API_KEY = process.env.GEMINI_API_KEY;

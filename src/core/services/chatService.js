@@ -33,4 +33,4 @@ class ChatService {
   }
 }
 
-module.exports = ChatService;
+export default ChatService;

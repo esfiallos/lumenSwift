@@ -1,5 +1,6 @@
-const { GoogleGenerativeAI } = require("@google/generative-ai");
-const AIPort = require("../../core/ports/aiPort");
+// GeminiAdapter.js
+import AIPort from "../../core/ports/aiPort.js";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 class GeminiAdapter extends AIPort {
   constructor(apiKey) {
@@ -16,4 +17,5 @@ class GeminiAdapter extends AIPort {
   }
 }
 
-module.exports = GeminiAdapter;
+export default GeminiAdapter;
+

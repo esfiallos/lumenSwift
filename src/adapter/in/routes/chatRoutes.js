@@ -1,4 +1,5 @@
-const express = require("express");
+// src/adapter/in/routes/chatRoutes.js
+import express from "express";
 
 function createChatRoutes(chatService) {
   const router = express.Router();
@@ -25,4 +26,4 @@ function createChatRoutes(chatService) {
   return router;
 }
 
-module.exports = createChatRoutes;
+export default createChatRoutes;
