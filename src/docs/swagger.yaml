@@ -1,0 +1,159 @@
+openapi: 3.0.3
+info:
+  title: Lumen Backend API
+  description: API para manejo de usuarios, emociones, mensajes, consejos y chat con Gemini AI
+  version: 1.0.0
+servers:
+  - url: http://localhost:5000
+paths:
+  /api/usuarios:
+    post:
+      summary: Crear un usuario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                correo:
+                  type: string
+                nombre:
+                  type: string
+              required:
+                - correo
+                - nombre
+      responses:
+        '201':
+          description: Usuario creado
+    get:
+      summary: Listar todos los usuarios
+      responses:
+        '200':
+          description: Lista de usuarios
+  /api/emociones:
+    post:
+      summary: Crear una emoción
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_correo:
+                  type: string
+                sentimiento:
+                  type: string
+                descripcion:
+                  type: string
+              required:
+                - user_correo
+                - sentimiento
+                - descripcion
+      responses:
+        '201':
+          description: Emoción creada
+    get:
+      summary: Listar emociones por usuario
+      parameters:
+        - in: query
+          name: user_correo
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Lista de emociones
+  /api/mensajes:
+    post:
+      summary: Crear un mensaje
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mensaje:
+                  type: string
+                autor:
+                  type: string
+                categoria:
+                  type: string
+                  enum: [Reflexión, Inspiración, Superación, Anclaje, Motivación]
+              required:
+                - mensaje
+                - autor
+                - categoria
+      responses:
+        '201':
+          description: Mensaje creado
+    get:
+      summary: Listar todos los mensajes
+      responses:
+        '200':
+          description: Lista de mensajes
+  /api/consejos:
+    post:
+      summary: Crear un consejo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                texto:
+                  type: string
+                categoria:
+                  type: string
+                  enum: [Hábitos, Autoestima, Descanso, Relaciones, Foco]
+              required:
+                - texto
+                - categoria
+      responses:
+        '201':
+          description: Consejo creado
+    get:
+      summary: Listar consejos
+      responses:
+        '200':
+          description: Lista de consejos
+  /api/chat/chat:
+    post:
+      summary: Generar respuesta de chat
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+              required:
+                - message
+      responses:
+        '200':
+          description: Respuesta del chat
+  /api/chat/agent:
+    post:
+      summary: Generar acción de agente AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                prompt:
+                  type: string
+                type:
+                  type: string
+              required:
+                - prompt
+                - type
+      responses:
+        '200':
+          description: Resultado del agente AI
