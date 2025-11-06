@@ -1,4 +1,5 @@
-import { crearEmocion as crearEmocionDB } from "../core/services/emocionService.js";
+import { crearEmocion as crearEmocionDB, 
+  listarEmociones as listarEmocionesDB } from "../core/services/emocionService.js";
 import { listarMensajes } from "../core/services/mensajeService.js";
 
 export async function crearEmocion(req, res, chatService) {
@@ -29,7 +30,7 @@ export async function listarEmociones(req, res) {
   try {
     const correo = req.query.user_correo;
     if (!correo) return res.status(400).json({ error: "Falta user_correo" });
-    const emociones = await listarEmociones(correo);
+    const emociones = await listarEmocionesDB(correo);
     res.json(emociones);
   } catch (err) {
     res.status(500).json({ error: err.message });

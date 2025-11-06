@@ -1,145 +1,247 @@
-openapi: 3.0.3
+openapi: 3.0.0
 info:
-  title: Lumen Backend API
-  description: API para manejo de usuarios, emociones, mensajes, consejos y chat con Gemini AI
+  title: API de Bienestar Emocional (Lumen)
+  description: API para gestionar usuarios, emociones, consejos y chat de IA.
   version: 1.0.0
 servers:
-  - url: http://localhost:5000
+  - url: http://localhost:5000/api
+    description: Servidor de desarrollo local
+  
+tags:
+  - name: Usuarios
+    description: Autenticación y registro de usuarios
+  - name: Emociones
+    description: Gestión del registro de emociones (Protegido)
+  - name: Chat
+    description: Interacción con el Chatbot (Protegido)
+  - name: Contenido
+    description: Obtención de consejos y mensajes motivacionales
+
+# 1. DEFINICIÓN DEL ESQUEMA DE SEGURIDAD
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: "Introduce el token JWT así: Bearer {token}"
+      
+  schemas:
+    Racha:
+      type: object
+      properties:
+        actual:
+          type: integer
+          example: 5
+        mejor:
+          type: integer
+          example: 10
+        ultima_actividad:
+          type: string
+          format: date-time
+          
+    Usuario:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: 68fd42f2be00975992cebea4
+        correo:
+          type: string
+          format: email
+          example: usuario@ejemplo.com
+        nombre:
+          type: string
+          example: Usuario de Prueba
+        racha:
+          $ref: '#/components/schemas/Racha'
+        fecha_creacion:
+          type: string
+          format: date-time
+          
+    UsuarioInput:
+      type: object
+      required:
+        - correo
+        - nombre
+      properties:
+        correo:
+          type: string
+          format: email
+        nombre:
+          type: string
+          
+    LoginRequest:
+      type: object
+      required:
+        - correo
+      properties:
+        correo:
+          type: string
+          format: email
+          
+    LoginResponse:
+      type: object
+      properties:
+        usuario:
+          $ref: '#/components/schemas/Usuario'
+        token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+          
+    Emocion:
+      type: object
+      properties:
+        _id:
+          type: string
+        user_correo:
+          type: string
+          format: email
+        sentimiento:
+          type: string
+          example: Motivado
+        descripcion:
+          type: string
+          example: Hoy me siento listo para todo
+        fecha:
+          type: string
+          format: date-time
+          
+    EmocionInput:
+      type: object
+      required:
+        - sentimiento
+      properties:
+        sentimiento:
+          type: string
+        descripcion:
+          type: string
+          
+    Consejo:
+      type: object
+      properties:
+        _id:
+          type: string
+        texto:
+          type: string
+        categoria:
+          type: string
+          
+    Mensaje:
+      type: object
+      properties:
+        _id:
+          type: string
+        mensaje:
+          type: string
+        autor:
+          type: string
+        categoria:
+          type: string
+          
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Mensaje de error
+
+# 2. DEFINICIÓN DE RUTAS (PATHS)
 paths:
-  /api/usuarios:
+  /usuarios/registrar:
     post:
-      summary: Crear un usuario
+      tags: [Usuarios]
+      summary: Registra un nuevo usuario
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                correo:
-                  type: string
-                nombre:
-                  type: string
-              required:
-                - correo
-                - nombre
+              $ref: '#/components/schemas/UsuarioInput'
       responses:
         '201':
           description: Usuario creado
-    get:
-      summary: Listar todos los usuarios
-      responses:
-        '200':
-          description: Lista de usuarios
-  /api/emociones:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+        '400':
+          description: Error (ej. usuario ya existe)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /usuarios/login:
     post:
-      summary: Crear una emoción
+      tags: [Usuarios]
+      summary: Inicia sesión (obtiene token)
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                user_correo:
-                  type: string
-                sentimiento:
-                  type: string
-                descripcion:
-                  type: string
-              required:
-                - user_correo
-                - sentimiento
-                - descripcion
+              $ref: '#/components/schemas/LoginRequest'
       responses:
-        '201':
-          description: Emoción creada
+        '200':
+          description: Login exitoso, devuelve usuario y token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '404':
+          description: Usuario no encontrado
+        '400':
+          description: Correo no proporcionado
+
+  /emociones:
     get:
-      summary: Listar emociones por usuario
-      parameters:
-        - in: query
-          name: user_correo
-          schema:
-            type: string
-          required: true
+      tags: [Emociones]
+      summary: Obtiene historial de emociones del usuario
+      description: Ruta protegida. Requiere Bearer Token.
+      security:
+        - BearerAuth: [] # <-- ¡RUTA PROTEGIDA!
       responses:
         '200':
           description: Lista de emociones
-  /api/mensajes:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Emocion'
+        '401':
+          description: No autorizado
+          
     post:
-      summary: Crear un mensaje
+      tags: [Emociones]
+      summary: Registra una nueva emoción (y actualiza racha)
+      description: Ruta protegida. Requiere Bearer Token.
+      security:
+        - BearerAuth: [] # <-- ¡RUTA PROTEGIDA!
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                mensaje:
-                  type: string
-                autor:
-                  type: string
-                categoria:
-                  type: string
-                  enum: [Reflexión, Inspiración, Superación, Anclaje, Motivación]
-              required:
-                - mensaje
-                - autor
-                - categoria
+              $ref: '#/components/schemas/EmocionInput'
       responses:
         '201':
-          description: Mensaje creado
-    get:
-      summary: Listar todos los mensajes
-      responses:
-        '200':
-          description: Lista de mensajes
-  /api/consejos:
+          description: Emoción registrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Emocion'
+        '401':
+          description: No autorizado
+          
+  /chat:
     post:
-      summary: Crear un consejo
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                texto:
-                  type: string
-                categoria:
-                  type: string
-                  enum: [Hábitos, Autoestima, Descanso, Relaciones, Foco]
-              required:
-                - texto
-                - categoria
-      responses:
-        '201':
-          description: Consejo creado
-    get:
-      summary: Listar consejos
-      responses:
-        '200':
-          description: Lista de consejos
-  /api/chat/chat:
-    post:
-      summary: Generar respuesta de chat
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                message:
-                  type: string
-              required:
-                - message
-      responses:
-        '200':
-          description: Respuesta del chat
-  /api/chat/agent:
-    post:
-      summary: Generar acción de agente AI
+      tags: [Chat]
+      summary: Envía un mensaje al chat de IA
+      description: Ruta protegida. Requiere Bearer Token.
+      security:
+        - BearerAuth: [] # <-- ¡RUTA PROTEGIDA!
       requestBody:
         required: true
         content:
@@ -149,11 +251,44 @@ paths:
               properties:
                 prompt:
                   type: string
-                type:
-                  type: string
-              required:
-                - prompt
-                - type
+                  example: "Me siento un poco triste hoy"
       responses:
         '200':
-          description: Resultado del agente AI
+          description: Respuesta de la IA
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    type: string
+        '401':
+          description: No autorizado
+          
+  /consejos:
+    get:
+      tags: [Contenido]
+      summary: Obtiene una lista de consejos
+      responses:
+        '200':
+          description: Lista de consejos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Consejo'
+                  
+  /mensajes:
+    get:
+      tags: [Contenido]
+      summary: Obtiene una lista de mensajes motivacionales
+      responses:
+        '200':
+          description: Lista de mensajes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Mensaje'
