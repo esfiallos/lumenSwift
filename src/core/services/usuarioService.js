@@ -1,4 +1,4 @@
-import Usuario from "../../models/usuario.js";
+import Usuario from '../../models/Usuario.js';
 
 export async function crearUsuario(data) {
   const existing = await Usuario.findOne({ correo: data.correo });

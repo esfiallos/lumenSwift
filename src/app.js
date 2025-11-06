@@ -16,20 +16,20 @@ export default function createApp(chatService) {
 
   // 🔹 Rutas
 
-  console.log("🧩 Creando rutas...");
+  console.log("Creando rutas...");
 
-console.log("🧩 Cargando rutas...");
+console.log("Cargando rutas...");
 app.use("/api/usuarios", usuarioRoutes);
-console.log("✅ Usuarios listo");
+console.log("Usuarios listo");
 
 app.use("/api/consejos", consejoRoutes);
-console.log("✅ Consejos listo");
+console.log("Consejos listo");
 
 app.use("/api/mensajes", mensajeRoutes);
-console.log("✅ Mensajes listo");
+console.log("Mensajes listo");
 
 app.use("/api/emociones", createEmocionRoutes(chatService));
-console.log("✅ Emociones listo");
+console.log("Emociones listo");
 
   // 🔹 Default route
   app.get("/", (req, res) => {
