@@ -26,11 +26,11 @@ Esta carpeta define las entidades clave (esquemas de Mongoose) que se persistir�
 
 ---
 
-## 📁 Carpeta Principal: `fuente/` (El Núcleo del Backend)
+##  Carpeta Principal: `fuente/`
 
 Esta carpeta contiene toda la lógica de la aplicación, separada por capas siguiendo los principios de la Arquitectura Hexagonal.
 
-### ⚙️ 2.1. Adaptadores y Configuración
+### 2.1. Adaptadores y Configuración
 
 * `fuente/configuracion/`
     * `db.js`: Contiene toda la lógica de conexión al clúster de MongoDB Atlas.
