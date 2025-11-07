@@ -4,7 +4,7 @@
 
 > Este documento describe la estructura del backend de Lumen, implementada bajo una **Arquitectura Hexagonal (Clean Architecture)**. Esta separación garantiza la escalabilidad y la modularidad, aislando la lógica de negocio de tecnologías externas como MongoDB, Express y Gemini.
 
-## 🚀 Archivos Raíz y Estructuras Globales
+## Archivos Raíz y Estructuras Globales
 
 La estructura base del proyecto define el punto de entrada, la configuración de la aplicación y las dependencias.
 
@@ -40,7 +40,7 @@ Esta carpeta contiene toda la lógica de la aplicación, separada por capas sigu
     * `mongoAdapter.js`: Contiene las funciones de bajo nivel del driver de MongoDB (CRUD) que implementan el `dbPort`.
     * `geminiAdapter.js`: Maneja la petición HTTP a la API de Gemini, organizando el formato JSON de salida e implementando el `aiPort`.
 
-### 🔌 2.2. Capa Externa: Controladores (`fuente/controladores/`)
+###  Controladores (`fuente/controladores/`)
 
 Los controladores son los *handlers* de Express. Su única responsabilidad es recibir las peticiones HTTP, validar (a menudo con middleware) y orquestar la respuesta llamando a la capa de servicios.
 
@@ -48,7 +48,7 @@ Los controladores son los *handlers* de Express. Su única responsabilidad es re
 * `controladorDeEmociones.js`: Maneja el registro (creación) y consulta del historial del diario.
 * `mensajeController.js`: Gestiona las solicitudes de feedback motivacional.
 
-### 🧠 2.3. Capa Central: Lógica de Negocio (`fuente/centro/servicios/`)
+### 2.3. Lógica de Negocio (`fuente/centro/servicios/`)
 
 Esta es la capa de lógica pura, el corazón de la aplicación. Está completamente desacoplada de la tecnología (Express, MongoDB) y no sabe nada de HTTP.
 
@@ -57,14 +57,14 @@ Esta es la capa de lógica pura, el corazón de la aplicación. Está completame
 * `chatService.js`: Es el orquestador principal de la IA. Contiene la lógica para llamar al puerto de Gemini (`aiPort`) y dar contexto emocional al *prompt* antes de generar la respuesta.
 * `mensajeService.js`: Lógica para la entrega y gestión de mensajes (ej. marcar como leído).
 
-### 🚢 2.4. Capa de Abstracción: Puertos (`fuente/centro/puertos/`)
+###  2.4. Capa de Abstracción: Puertos (`fuente/centro/puertos/`)
 
 Esta carpeta define las "interfaces" (contratos) que aíslan la lógica central de la tecnología externa. Los servicios dependen de estos puertos, no de los adaptadores.
 
 * `dbPort.js`: El Puerto de Persistencia. Define los métodos (Ej. `dbPort.guardar(entidad)`) que el `mongoAdapter` debe implementar.
 * `aiPort.js`: El Puerto de IA. Define la interfaz para interactuar con el modelo de lenguaje (Ej. `aiPort.generarFeedback(contexto)`).
 
-### 📡 2.5. Definición de Endpoints (`fuente/adaptador/en/rutas/`)
+###  2.5. Definición de Endpoints (`fuente/adaptador/en/rutas/`)
 
 Estos son adaptadores de "entrada" (lado izquierdo de la arquitectura). Definen las rutas finales de la API REST y las conectan con los métodos de los controladores.
 
