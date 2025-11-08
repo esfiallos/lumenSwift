@@ -4,7 +4,7 @@ import { registrarUsuario, obtenerUsuarios, loginUsuario } from "../../../contro
 
 const router = express.Router();
 
-router.post("/", registrarUsuario);
+router.post("/registrar", registrarUsuario);
 router.get("/", obtenerUsuarios);
 router.post("/login", loginUsuario);
 
