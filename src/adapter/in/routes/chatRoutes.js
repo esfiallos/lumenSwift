@@ -11,20 +11,32 @@ function createChatRoutes(chatService) {
   //  Se añade "authMiddleware" para proteger la ruta
   // 3. Se lee "req.body.prompt" para coincidir con ChatInput.swift
   router.post("/", authMiddleware, async (req, res) => {
+
+    console.log("\n--- INICIO PETICIÓN POST /api/chat ---");
+    console.log("  -> Middleware de Auth: ¡ÉXITO! (Token verificado)");
+    console.log("  -> Usuario autenticado:", req.user.correo);
+    console.log("  -> Header 'Authorization' completo:", req.headers['authorization']);
+    console.log("  -> Body (raw) recibido:", JSON.stringify(req.body));
+
     try {
       const { prompt } = req.body;
       if (!prompt) {
+        console.error("  -> ERROR: El 'prompt' es requerido.");
         return res.status(400).json({ error: "El 'prompt' es requerido" });
       }
 
       // El authMiddleware nos da "req.user"
-      const userCorreo = req.user.correo;
+      // const userCorreo = req.user.correo;
       
+      console.log("  -> Llamando a chatService.chat()...");
       const text = await chatService.chat(prompt);
 
+      console.log("  -> chatService.chat() respondió.");
       res.json({ response: text });
 
     } catch (err) {
+      console.error("\n*** ¡ERROR EN CHAT! ***");
+      console.error("  -> El 'chatService' falló:", err.message);
       res.status(400).json({ error: err.message });
     }
   });
