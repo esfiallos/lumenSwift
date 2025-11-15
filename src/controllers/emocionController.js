@@ -21,21 +21,34 @@ export async function crearEmocionConIA(req, res, chatService) {
     // Ahora el servicio sabrá QUIÉN guarda la emoción y podrá calcular la racha.
     const emocionGuardada = await crearEmocionDB(userCorreo, req.body);
 
-    // 3. (Tu lógica de IA está perfecta)
-    const categorias = ["Reflexión", "Inspiración", "Superación", "Anclaje", "Motivación"];
-    const categoriaElegida = await chatService.agent(
-      `Analiza este sentimiento: "${req.body.descripcion}". Elige una categoría de: ${categorias.join(", ")}`,
-      "string"
-    );
+   // 3. Extraemos los datos para el prompt
+    const { sentimiento, descripcion } = req.body;
+    let mensajeIA;
 
-    const mensajes = await listarMensajes();
-    const mensajesFiltrados = mensajes.filter(m => m.categoria === categoriaElegida);
-    const mensajeIA = mensajesFiltrados[Math.floor(Math.random() * mensajesFiltrados.length)];
+    // 4. Creamos el prompt controlado
+    // Si el usuario no escribió nota, le damos un mensaje amable por defecto.
+    if (!descripcion || descripcion.trim() === "") {
+        mensajeIA = `Gracias por registrar que te sientes "${sentimiento}". ¡Es un gran paso para tu bienestar!`;
+    } else {
+        // Si escribió una nota, generamos el prompt controlado
+        const promptControlado = `
+          Eres 'Lumen', un asistente de bienestar empático y consejero.
+          Un usuario acaba de registrar que se siente "${sentimiento}".
+          Su nota personal es: "${descripcion}".
 
-    // 5. Responder
+          Por favor, escribe un mensaje de apoyo muy corto (máximo 30 palabras) 
+          que reaccione directamente a su nota. Sé alentador y no hagas preguntas.
+        `;
+        
+        // 5. Llamamos a la IA para generar el mensaje dinámico
+        // Usamos chatService.chat() que es para generación libre
+        mensajeIA = await chatService.chat(promptControlado);
+    }
+    
+    // 6. Responder
     res.status(201).json({
       emocion: emocionGuardada,
-      mensajeIA: mensajeIA ? mensajeIA.mensaje : "¡Sigue adelante!"
+      mensajeIA: mensajeIA 
     });
 
   } catch (err) {
