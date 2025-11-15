@@ -126,6 +126,19 @@ components:
           type: string
         categoria:
           type: string
+          enum: ["Hábitos", "Autoestima", "Descanso", "Relaciones", "Foco"]
+
+    ConsejoInput:
+      type: object
+      required:
+        - texto
+        - categoria
+      properties:
+        texto:
+          type: string
+        categoria:
+          type: string
+          enum: ["Hábitos", "Autoestima", "Descanso", "Relaciones", "Foco"]
           
     Mensaje:
       type: object
@@ -138,7 +151,42 @@ components:
           type: string
         categoria:
           type: string
-          
+          enum: ["Reflexión", "Inspiración", "Superación", "Anclaje", "Motivación"]
+
+    MensajeInput:
+      type: object
+      required:
+        - mensaje
+        - autor
+        - categoria
+      properties:
+        mensaje:
+          type: string
+        autor:
+          type: string
+        categoria:
+          type: string
+          enum: ["Reflexión", "Inspiración", "Superación", "Anclaje", "Motivación"]
+    
+    # --- ESQUEMAS AÑADIDOS ---
+    ChatAgentRequest:
+      type: object
+      required:
+        - prompt
+        - type
+      properties:
+        prompt:
+          type: string
+        type:
+          type: string
+          enum: ["int", "bool", "string"]
+
+    ChatAgentResponse:
+      type: object
+      properties:
+        result:
+          type: object
+
     ErrorResponse:
       type: object
       properties:
@@ -194,13 +242,31 @@ paths:
         '400':
           description: Correo no proporcionado
 
+ 
+  /usuarios:
+    get:
+      tags: [Usuarios]
+      summary: Obtiene todos los usuarios
+      description: (Ruta de desarrollo/admin, considera protegerla)
+      responses:
+        '200':
+          description: Lista de usuarios
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Usuario'
+        '500':
+          description: Error de servidor
+
   /emociones:
     get:
       tags: [Emociones]
       summary: Obtiene historial de emociones del usuario
       description: Ruta protegida. Requiere Bearer Token.
       security:
-        - BearerAuth: [] # <-- ¡RUTA PROTEGIDA!
+        - BearerAuth: [] 
       responses:
         '200':
           description: Lista de emociones
@@ -218,7 +284,7 @@ paths:
       summary: Registra una nueva emoción (y actualiza racha)
       description: Ruta protegida. Requiere Bearer Token.
       security:
-        - BearerAuth: [] # <-- ¡RUTA PROTEGIDA!
+        - BearerAuth: [] 
       requestBody:
         required: true
         content:
@@ -227,11 +293,16 @@ paths:
               $ref: '#/components/schemas/EmocionInput'
       responses:
         '201':
-          description: Emoción registrada
+          description: Emoción registrada (devuelve emocion y mensajeIA)
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Emocion'
+                type: object
+                properties:
+                  emocion:
+                    $ref: '#/components/schemas/Emocion'
+                  mensajeIA:
+                    type: string
         '401':
           description: No autorizado
           
@@ -241,7 +312,7 @@ paths:
       summary: Envía un mensaje al chat de IA
       description: Ruta protegida. Requiere Bearer Token.
       security:
-        - BearerAuth: [] # <-- ¡RUTA PROTEGIDA!
+        - BearerAuth: [] 
       requestBody:
         required: true
         content:
@@ -264,6 +335,31 @@ paths:
                     type: string
         '401':
           description: No autorizado
+
+  /chat/agent:
+    post:
+      tags: [Chat]
+      summary: Envía un prompt estructurado al agente de IA
+      description: Ruta protegida. Requiere Bearer Token.
+      security:
+        - BearerAuth: [] 
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatAgentRequest'
+      responses:
+        '200':
+          description: Respuesta estructurada de la IA
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatAgentResponse'
+        '401':
+          description: No autorizado
+        '400':
+          description: Error en la solicitud
           
   /consejos:
     get:
@@ -278,6 +374,25 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Consejo'
+    
+    post:
+      tags: [Contenido]
+      summary: (Admin) Registra un nuevo consejo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConsejoInput'
+      responses:
+        '201':
+          description: Consejo creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Consejo'
+        '400':
+          description: Error de validación
                   
   /mensajes:
     get:
@@ -292,3 +407,22 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Mensaje'
+
+    post:
+      tags: [Contenido]
+      summary: (Admin) Registra un nuevo mensaje
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MensajeInput'
+      responses:
+        '201':
+          description: Mensaje creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mensaje'
+        '400':
+          description: Error de validación

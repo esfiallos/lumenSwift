@@ -1,11 +1,14 @@
 import request from 'supertest';
-import createApp from '../app.js'; // Ajusta la ruta si es necesario
+import createApp from '../app.js'; 
 
 // Simula el chatService
 const mockChatService = {
-  // Cambia 'getChatResponse' por 'agent', que es lo que usa tu controlador
+  chat: async (prompt) => {
+    return "Mensaje de IA simulado"; // Devuelve un string
+  },
+  // (Añadimos 'agent' también para que el mock sea completo por si se usa en otro lado)
   agent: async (prompt, type) => {
-    return "Categoria Simulada"; // Devuelve una categoría de string
+    return "Respuesta de agente simulada"; 
   }
 };
 const app = createApp(mockChatService);
@@ -59,6 +62,8 @@ describe('Rutas Protegidas de /api/emociones', () => {
 
     expect(res.statusCode).toBe(201); // 201 Created
     expect(res.body.emocion.sentimiento).toBe(nuevaEmocion.sentimiento);
+    // Verificamos que la IA (simulada) respondió
+    expect(res.body.mensajeIA).toBe("Mensaje de IA simulado");
   });
 
 });
