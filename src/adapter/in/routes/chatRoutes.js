@@ -27,9 +27,17 @@ function createChatRoutes(chatService) {
 
       // El authMiddleware nos da "req.user"
       // const userCorreo = req.user.correo;
+
+      const promptControlado = `
+        Eres 'Lumen', un asistente de bienestar empático.
+        El usuario dice: "${prompt}"
+
+        Responde de forma breve y concisa, ideal para un chat móvil. 
+        Mantén tu respuesta por debajo de 50 palabras.
+      `;
       
       console.log("  -> Llamando a chatService.chat()...");
-      const text = await chatService.chat(prompt);
+      const text = await chatService.chat(promptControlado);
 
       console.log("  -> chatService.chat() respondió.");
       res.json({ response: text });
